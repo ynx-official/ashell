@@ -153,9 +153,10 @@ impl TinyShell {
 
     pub(super) fn render_tab_bar(
         &self,
-        source_window: gpui::AnyWindowHandle,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> impl IntoElement {
+        let source_window = window.window_handle();
         let view = cx.entity();
         let active_tab_index = self.workspace().active_tab_id().and_then(|active_id| {
             self.workspace()
@@ -280,15 +281,9 @@ impl TinyShell {
                     .flex()
                     .items_center()
                     .child(
-                        Button::new("tab-quick-connections")
-                            .ghost()
-                            .small()
-                            .rounded(px(6.))
-                            .icon(IconName::FolderOpen)
-                            .tooltip(t!("overview_connections").to_string())
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.show_quick_connection_manager_dialog(window, cx);
-                            })),
+                        crate::app::connection_manager::quick_connect::trigger(
+                            cx.entity(), window, cx,
+                        ),
                     ),
             )
             .child(
@@ -2210,6 +2205,7 @@ impl TinyShell {
         cx: &mut Context<PopupMenu>,
     ) -> PopupMenu {
         let (
+            edit_session_id,
             duplicate_session,
             reconnect_tab_ids,
             reconnect_all_tab_ids,
@@ -2249,6 +2245,13 @@ impl TinyShell {
                 .filter_map(|group| group.pane_root.tab_ids().first().copied())
                 .map(String::from)
                 .collect();
+            let edit_session_id = group_tab_ids.iter().find_map(|tab_id| {
+                this.workspace()
+                    .terminal_tab(tab_id)
+                    .and_then(|tab| tab.session.as_ref())
+                    .and_then(|session| this.config.get(&session.id))
+                    .map(|session| session.id.clone())
+            });
             let duplicate_session = group_tab_ids.iter().find_map(|tab_id| {
                 this.workspace()
                     .terminal_tab(tab_id)
@@ -2281,6 +2284,7 @@ impl TinyShell {
                     .is_some_and(|tab| tab.kind == TabKind::Ssh && tab.connected)
             });
             (
+                edit_session_id,
                 duplicate_session,
                 reconnect_tab_ids,
                 reconnect_all_tab_ids,
@@ -2292,6 +2296,15 @@ impl TinyShell {
         };
 
         let mut menu = menu
+            .item(
+                PopupMenuItem::new(t!("edit").to_string())
+                    .disabled(edit_session_id.is_none())
+                    .on_click(window.listener_for(&view, move |this, _, window, cx| {
+                        if let Some(session_id) = edit_session_id.clone() {
+                            this.edit_saved_session(session_id, window, cx);
+                        }
+                    })),
+            )
             .item(
                 PopupMenuItem::new(t!("tab_copy_label").to_string())
                     .disabled(duplicate_session.is_none())

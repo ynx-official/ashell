@@ -5,6 +5,8 @@
 
 ## 设计
 
+- [标签栏连接编辑](02-design/tab-connection-edit.md)
+
 - [SSH 私钥导入交互](02-design/ssh-key-import.md)
 
 - [终端内容高亮方案](02-design/terminal-content-highlighting.md)
