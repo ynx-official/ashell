@@ -1,9 +1,11 @@
 # TinyShell 文档索引
 
 > 状态：Approved  
-> 最后更新：2026-08-27
+> 最后更新：2026-09-07
 
 ## 设计
+
+- [SSH 私钥导入交互](02-design/ssh-key-import.md)
 
 - [终端内容高亮方案](02-design/terminal-content-highlighting.md)
 

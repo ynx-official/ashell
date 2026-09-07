@@ -306,6 +306,7 @@ pub(crate) struct ConnectionFormInputs {
     pub(crate) key_path_input: Entity<InputState>,
     pub(crate) key_inline_input: Entity<InputState>,
     pub(crate) passphrase_input: Entity<InputState>,
+    pub(crate) key_import_text_input: Entity<InputState>,
     pub(crate) key_import_remark_input: Entity<InputState>,
     pub(crate) key_import_passphrase_input: Entity<InputState>,
     pub(crate) proxy_host_input: Entity<InputState>,
@@ -345,6 +346,12 @@ impl ConnectionFormInputs {
                     .placeholder(t!("ssh_passphrase_placeholder").to_string())
                     .masked(true)
             }),
+            key_import_text_input: cx.new(|cx| {
+                InputState::new(window, cx)
+                    .multi_line(true)
+                    .rows(6)
+                    .placeholder(t!("key_import_text_placeholder").to_string())
+            }),
             key_import_remark_input: cx.new(|cx| {
                 InputState::new(window, cx)
                     .placeholder(t!("key_import_remark_placeholder").to_string())
@@ -368,7 +375,7 @@ impl ConnectionFormInputs {
         }
     }
 
-    pub(crate) fn all_inputs(&self) -> [&Entity<InputState>; 15] {
+    pub(crate) fn all_inputs(&self) -> [&Entity<InputState>; 16] {
         [
             &self.host_input,
             &self.session_name_input,
@@ -379,6 +386,7 @@ impl ConnectionFormInputs {
             &self.key_path_input,
             &self.key_inline_input,
             &self.passphrase_input,
+            &self.key_import_text_input,
             &self.key_import_remark_input,
             &self.key_import_passphrase_input,
             &self.proxy_host_input,
@@ -1165,7 +1173,20 @@ impl TinyShell {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if input == &self.connection_inputs.key_import_passphrase_input {
+        if input == &self.connection_inputs.key_import_text_input {
+            if matches!(event, InputEvent::Change) && self.key_import.open {
+                let content = input.read(cx).value().to_string();
+                let passphrase = self
+                    .connection_inputs
+                    .key_import_passphrase_input
+                    .read(cx)
+                    .value()
+                    .to_string();
+                self.key_import
+                    .set_text(content, &passphrase, &self.managed_keys);
+                cx.notify();
+            }
+        } else if input == &self.connection_inputs.key_import_passphrase_input {
             let passphrase = self
                 .connection_inputs
                 .key_import_passphrase_input

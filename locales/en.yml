@@ -1026,3 +1026,8 @@ tab_move_no_target_window: "No other window is available"
 tab_groups_detached: "Selected tabs detached to a new window"
 settings_move_tab_next_window: "Move Current Tab to Next Window"
 settings_move_tab_previous_window: "Move Current Tab to Previous Window"
+
+key_import_source_file: "Choose file"
+key_import_source_text: "Enter text"
+key_import_text_hint: "Paste the complete private key, including BEGIN / END lines. OpenSSH keys are supported; encrypted keys require a passphrase."
+key_import_text_placeholder: "-----BEGIN OPENSSH PRIVATE KEY-----\nPaste the complete private key\n-----END OPENSSH PRIVATE KEY-----"

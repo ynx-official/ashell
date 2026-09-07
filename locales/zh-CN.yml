@@ -1026,3 +1026,8 @@ tab_move_no_target_window: "没有其他窗口可移动"
 tab_groups_detached: "已将选中的标签分离到新窗口"
 settings_move_tab_next_window: "将当前标签移动到下一个窗口"
 settings_move_tab_previous_window: "将当前标签移动到上一个窗口"
+
+key_import_source_file: "选择文件"
+key_import_source_text: "填写文本"
+key_import_text_hint: "粘贴完整私钥，包含 BEGIN / END 行。支持 OpenSSH 私钥；加密私钥需填写口令。"
+key_import_text_placeholder: "-----BEGIN OPENSSH PRIVATE KEY-----\n粘贴完整私钥内容\n-----END OPENSSH PRIVATE KEY-----"
